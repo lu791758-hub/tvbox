@@ -1,0 +1,25 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    - cron: '0 16 * * *'      # 每天北京时间 0 点（UTC 16:00）自动运行，可自行调整
+  workflow_dispatch:          # 支持在 GitHub 页面手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+
+      - name: Sync upstream changes
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          upstream_sync_repo: cluntop/tvbox    # 上游仓库
+          upstream_sync_branch: main           # 上游分支
+          target_sync_branch: main             # 你的目标分支（通常也是 main）
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}  # 必须这样写，用于 push 权限
+          test_mode: false                     # false 为实际同步，true 只测试不 push
